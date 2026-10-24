@@ -25,7 +25,7 @@ main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
 h1{font-size:26px;font-weight:800;margin:0 0 2px;letter-spacing:-.01em}
 .sub{color:var(--mute);margin:0 0 16px;font-size:14px}
 nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}
-nav button{flex:1;border:0;background:none;color:var(--mute);font:500 14px inherit;font-family:inherit;padding:9px 4px;border-radius:9px;cursor:pointer}
+nav button{flex:1;border:0;background:none;color:var(--mute);font:500 13px inherit;font-family:inherit;padding:9px 2px;white-space:nowrap;border-radius:9px;cursor:pointer}
 nav button[aria-selected=true]{background:var(--acc);color:var(--accT);font-weight:700}
 button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
@@ -65,6 +65,14 @@ td button{background:none;border:0;color:var(--mute);cursor:pointer;font-size:18
 .note{font-size:14px;color:var(--mute);margin:8px 0 0}
 svg{width:100%;height:auto;display:block}
 .hide{display:none}
+.tb td,.tb th{vertical-align:top;font-size:14px}
+.tb td:first-child{font-weight:700;white-space:nowrap;padding-right:8px}
+.bw{height:8px;background:var(--acc);border-radius:4px;min-width:2px}
+.ln{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:14px;border-top:1px solid var(--line)}
+.ln:first-of-type{border-top:0}
+.ln span:last-child{color:var(--mute);white-space:nowrap}
+h2{font-size:17px;margin:0 0 8px}
+ol.st{margin:10px 0 2px 24px;padding:0}ol.st li{margin-bottom:6px;font-size:15px}
 .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .mh b{font-size:18px}.mh button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
@@ -89,24 +97,26 @@ svg{width:100%;height:auto;display:block}
 <p class="sub">56kg → 65kg · mục tiêu ~2.600 kcal và ~100g đạm mỗi ngày</p>
 <nav role="tablist">
 <button role="tab" aria-selected="true" data-t="a">Hôm nay</button>
-<button role="tab" aria-selected="false" data-t="b">Buổi tập</button>
+<button role="tab" aria-selected="false" data-t="b">Tập</button>
 <button role="tab" aria-selected="false" data-t="c">Cân nặng</button>
 <button role="tab" aria-selected="false" data-t="d">Tháng</button>
+<button role="tab" aria-selected="false" data-t="e">Thực đơn</button>
 </nav>
 
 <section id="a"></section>
 <section id="b" class="hide"></section>
 <section id="c" class="hide"></section>
 <section id="d" class="hide"></section>
+<section id="e" class="hide"></section>
 </main>
 
 <script>
 var MEALS=[
-["Sáng","3 trứng + 1 bát cơm hoặc bánh mì + 1 chuối",600],
-["Trưa","2 bát cơm + 150-200g thịt (gà, heo nạc, cá) + rau",700],
-["Xế","500ml sữa tươi + 1 nắm lạc hoặc bánh mì phết bơ đậu phộng",450],
-["Tối","2 bát cơm + thịt/cá + 1 miếng đậu phụ hoặc 1-2 trứng",700],
-["Trước ngủ","1 ly sữa tươi hoặc 1 hộp sữa chua",150]];
+["Sáng","3 trứng luộc hoặc hấp + 1-2 bát cơm (hoặc 1 ổ bánh mì) + 1 chuối",600],
+["Trưa","2 bát cơm + đạm luộc/hấp (gà, thịt, cá) + rau luộc, xem tab Thực đơn",700],
+["Xế","1 ổ bánh mì phết bơ đậu phộng",350],
+["Tối","2 bát cơm + đậu phụ hoặc trứng hoặc cá, thịt + rau luộc/canh",700],
+["Trước ngủ","1 hộp sữa nhỏ 180ml + 1 nắm lạc rang",250]];
 var EX=[
 {n:"Hít đất",s:"3 hiệp × 8-15 lần (gần hết sức)",c:["Hai tay rộng hơn vai một chút, thân thẳng từ đầu đến gót.","Hạ ngực sát sàn trong 3 giây, khuỷu tay chếch khoảng 45° so với thân.","Đẩy lên, không võng lưng, không chổng mông. Chưa làm nổi thì chống gối."]},
 {n:"Squat",s:"3 hiệp × 15-20 lần",c:["Chân rộng bằng vai, mũi chân hơi xoay ra ngoài.","Đẩy mông ra sau như ngồi xuống ghế, lưng thẳng, ngực mở, mắt nhìn phía trước.","Gối đi theo hướng mũi chân, gót không nhấc. Xuống tới khi đùi song song sàn rồi đứng lên bằng gót."]},
@@ -217,11 +227,64 @@ $("d").innerHTML=h;
 $("pm").onclick=function(){VM=new Date(y,m-1,1);renderD()};
 $("nm").onclick=function(){VM=new Date(y,m+1,1);renderD()}}
 
+var FIX=[["Trứng gà","3 quả",10,"Trứng"],["Chuối","1-2 quả",3,"Bánh mì, bơ, chuối"],["Bánh mì không","1 ổ",5,"Bánh mì, bơ, chuối"],["Bơ đậu phộng","1-2 muỗng",2,"Bánh mì, bơ, chuối"],["Sữa hộp nhỏ 180ml","1 hộp",7,"Sữa, lạc"],["Lạc rang","1 nắm ~30g",3,"Sữa, lạc"],["Gạo","~0,4kg",8,"Gạo"],["Gia vị (mắm, muối, dầu, hành, tỏi, gừng)","dùng dần",2,"Gia vị"]];
+var DAYS=[
+{n:"Thứ 2",l:"Gà luộc gừng + rau muống luộc",t:"Đậu phụ hấp + rau luộc",i:[["Đùi gà","1 chiếc ~250g",17,"Thịt, cá, gà"],["Đậu phụ","2 bìa",7,"Đậu phụ"],["Rau muống","1 bó",6,"Rau, khoai"]]},
+{n:"Thứ 3",l:"Trứng hấp hành + rau luộc",t:"Đậu phụ luộc + canh rau",i:[["Trứng thêm","2 quả",7,"Trứng"],["Đậu phụ","2 bìa",7,"Đậu phụ"],["Rau cải","1 bó",6,"Rau, khoai"]]},
+{n:"Thứ 4",l:"Cá hấp gừng + rau luộc",t:"Đậu phụ luộc + canh rau",i:[["Cá rô phi","1 con ~300g",15,"Thịt, cá, gà"],["Đậu phụ","2 bìa",7,"Đậu phụ"],["Rau","1 bó",6,"Rau, khoai"]]},
+{n:"Thứ 5",l:"Canh thịt băm rau cải",t:"2 trứng luộc + khoai lang luộc",i:[["Thịt băm","60g",8,"Thịt, cá, gà"],["Rau cải","1 bó",6,"Rau, khoai"],["Trứng thêm","2 quả",7,"Trứng"],["Khoai lang","1 củ",4,"Rau, khoai"]]},
+{n:"Thứ 6",l:"Thịt ba chỉ nạc luộc + rau luộc",t:"Đậu phụ hấp",i:[["Thịt ba chỉ nạc","120g",16,"Thịt, cá, gà"],["Đậu phụ","2 bìa",7,"Đậu phụ"],["Rau","1 bó",6,"Rau, khoai"]]},
+{n:"Thứ 7",l:"Gà luộc + rau luộc",t:"Khoai lang luộc + canh rau",i:[["Đùi gà","1 chiếc ~250g",17,"Thịt, cá, gà"],["Rau","1 bó",6,"Rau, khoai"],["Khoai lang","1 củ",4,"Rau, khoai"]]},
+{n:"Chủ nhật",l:"Cá hấp gừng + rau luộc",t:"Đậu phụ hấp + canh rau",i:[["Cá rô phi","1 con ~300g",15,"Thịt, cá, gà"],["Đậu phụ","2 bìa",7,"Đậu phụ"],["Rau","1 bó",6,"Rau, khoai"]]}];
+var GROUPS=["Trứng","Gạo","Thịt, cá, gà","Đậu phụ","Rau, khoai","Sữa, lạc","Bánh mì, bơ, chuối","Gia vị"];
+var NUOC="Nước chấm: 2 muỗng nước mắm + 1 muỗng đường + tỏi băm + ớt + 2 muỗng nước ấm + vài giọt chanh. Pha mỗi bữa, dùng trong ngày.";
+var GUIDE=[
+["Nấu cơm và hấp cùng một nồi",["Vo gạo 2-3 lần, cho nước vừa ngập gạo khoảng 1 đốt ngón tay, cắm nấu.","Khi nước bắt đầu sôi, đặt vỉ hấp hoặc bát lên trên để hấp trứng, đậu phụ, khoai lang.","Cơm chín thì đồ hấp cũng chín. Lấy ra ăn ngay, đừng để qua đêm."]],
+["Trứng luộc",["Cho trứng vào nồi, đổ nước lạnh ngập trứng, đun sôi rồi hạ lửa nhỏ.","Luộc 9-10 phút cho chín kỹ, vớt ra ngâm nước lạnh 2 phút cho dễ bóc.","Ăn trong ngày, không để sang hôm sau."]],
+["Trứng hấp hành",["Đánh 2 trứng với khoảng 4 muỗng canh nước, thêm chút muối hoặc nước mắm và hành lá.","Đổ vào bát, đậy đĩa hoặc màng bọc, hấp lửa nhỏ 10-12 phút đến khi mặt trứng đông.","Ăn nóng với cơm."]],
+["Thịt ba chỉ nạc luộc",["Đun nước sôi với chút muối, hành hoặc gừng đập dập.","Cho nguyên miếng thịt 120-150g vào, sôi lại thì hạ lửa nhỏ, luộc 15-20 phút đến khi chọc đũa không còn nước hồng.","Vớt ra, thái lát chấm nước chấm. Giữ nước luộc để nấu canh trong bữa đó."]],
+["Gà luộc gừng (đùi gà)",["Chà đùi gà với muối và gừng, rửa lại.","Cho vào nước sôi, hạ lửa nhỏ, luộc 20-25 phút đến khi chọc vào chỗ dày nhất không ra nước hồng.","Chấm muối tiêu chanh hoặc nước chấm. Phải chín kỹ."]],
+["Cá hấp gừng",["Rửa sạch cá, khía vài đường, ướp muối và gừng thái sợi 5-10 phút.","Hấp trên nồi nước sôi 12-15 phút (cá ~300g) cho thật chín.","Ăn nóng với nước mắm gừng, chấm cùng rau luộc."]],
+["Đậu phụ hấp hoặc luộc",["Luộc: cho đậu phụ vào nước sôi có chút muối, 3-5 phút. Hấp: 8-10 phút.","Vớt ra, cắt miếng, chấm nước tương hoặc nước chấm tỏi ớt.","Mua đậu phụ trong ngày, đừng để qua đêm."]],
+["Rau luộc",["Đun nước sôi, thêm chút muối và vài giọt dầu cho rau xanh.","Cho rau vào: rau muống khoảng 2 phút, rau cải 2-3 phút. Vớt ngay, đừng để nhũn.","Chấm nước mắm tỏi hoặc nước tương."]],
+["Canh thịt băm rau cải",["Ướp 60g thịt băm với chút muối và hành, đun nước sôi rồi cho thịt vào khuấy cho tơi.","Sôi lại vài phút, cho rau cải cắt khúc, nêm muối hoặc nước mắm.","Tắt bếp sau 2-3 phút để rau còn xanh."]],
+["Canh rau (dùng nước luộc)",["Đun nước sôi với chút muối, cho rau cắt khúc vào, nấu 2-3 phút.","Nêm nước mắm, có thể thêm hành lá. Nấu và ăn ngay."]],
+["Khoai lang luộc",["Rửa sạch, cho cả củ vào nước lạnh, đun sôi rồi hạ lửa nhỏ.","Luộc 20-25 phút (củ vừa) đến khi đũa xuyên qua dễ. Hoặc hấp trong nồi cơm.","Ăn thay một phần cơm vào bữa tối."]]];
+function sm(a){return a.reduce(function(t,x){return t+x[2]},0)}
+function renderE(){
+var fx=sm(FIX),tot=0,gp={},mx=0;
+DAYS.forEach(function(d){d.c=fx+sm(d.i);tot+=d.c;if(d.c>mx)mx=d.c;FIX.concat(d.i).forEach(function(x){gp[x[3]]=(gp[x[3]]||0)+x[2]})});
+var mon=(tot*30/7/1000).toFixed(2).replace(".",",");
+var h='<div class="card"><div class="big"><b>~'+tot+'k</b><span>mỗi tuần · khoảng '+mon+' triệu/tháng</span></div>';
+h+='<p class="note">Giá chỉ là ước tính ở chợ Hà Nội, có thể lệch 10% tùy nơi mua. Nếu cao hơn thì cắt bơ đậu phộng hoặc đổi bớt bữa gà sang trứng, đậu phụ.</p></div>';
+h+='<div class="card"><h2>Thực đơn tuần (luộc, hấp)</h2><table class="tb"><tr><th>Ngày</th><th>Trưa</th><th>Tối</th></tr>';
+DAYS.forEach(function(d){h+='<tr><td>'+d.n+'</td><td>'+d.l+'</td><td>'+d.t+'</td></tr>'});
+h+='</table><p class="note">Ăn cố định mỗi ngày: sáng (3 trứng + cơm hoặc bánh mì + chuối), xế (bánh mì phết bơ đậu phộng), trước ngủ (1 hộp sữa nhỏ + nắm lạc). Cơm mỗi bữa chính 2 bát.</p></div>';
+h+='<div class="card"><h2>Đi chợ theo ngày</h2><p class="note" style="margin:0 0 6px">Không có tủ lạnh nên mua trong ngày: sáng mua đạm và rau cho bữa trưa, chiều mua cho bữa tối.</p>';
+h+='<details><summary><span class="t"><b>Mua cố định mỗi ngày</b><span>'+fx+'k/ngày</span></span></summary><div style="margin-top:8px">';
+FIX.forEach(function(x){h+='<div class="ln"><span>'+x[0]+' · '+x[1]+'</span><span>'+x[2]+'k</span></div>'});
+h+='</div></details>';
+DAYS.forEach(function(d){h+='<details><summary><span class="t"><b>'+d.n+'</b><span>Mua thêm '+sm(d.i)+'k</span></span></summary><div style="margin-top:8px">';
+d.i.forEach(function(x){h+='<div class="ln"><span>'+x[0]+' · '+x[1]+'</span><span>'+x[2]+'k</span></div>'});
+h+='</div></details>'});
+h+='</div>';
+h+='<div class="card"><h2>Thống kê chi phí</h2><table class="tb"><tr><th>Ngày</th><th style="width:55%"></th><th>Tổng</th></tr>';
+DAYS.forEach(function(d){h+='<tr><td>'+d.n+'</td><td><div class="bw" style="width:'+Math.round(d.c/mx*100)+'%"></div></td><td>'+d.c+'k</td></tr>'});
+h+='<tr><td>Cả tuần</td><td></td><td><b>'+tot+'k</b></td></tr></table>';
+h+='<table class="tb" style="margin-top:14px"><tr><th>Nhóm</th><th>Chi phí/tuần</th><th>Tỷ lệ</th></tr>';
+GROUPS.forEach(function(g){var v=gp[g]||0;h+='<tr><td>'+g+'</td><td>'+v+'k</td><td>'+Math.round(v/tot*100)+'%</td></tr>'});
+h+='</table><p class="note">Ước tính dinh dưỡng trung bình khoảng 2.500-2.700 kcal và 95-105g đạm mỗi ngày. Những ngày ít thịt thì ăn đủ 2 bát cơm mỗi bữa và đủ trứng để bù.</p></div>';
+h+='<div class="card"><h2>Hướng dẫn nấu</h2><p class="note" style="margin:0 0 6px">'+NUOC+'</p>';
+GUIDE.forEach(function(g){h+='<details><summary><span class="t"><b>'+g[0]+'</b></span></summary><ol class="st">';
+g[1].forEach(function(x){h+='<li>'+x+'</li>'});h+='</ol></details>'});
+h+='</div><div class="card"><h2>Lưu ý khi không có tủ lạnh</h2><ul style="margin:0;padding-left:20px;font-size:15px"><li>Chỉ nấu đủ ăn trong bữa. Cơm, trứng luộc, rau, canh thừa qua đêm thì bỏ.</li><li>Thịt, cá, gà phải chín kỹ, không còn nước hồng.</li><li>Thấy mùi chua, nhớt hoặc lạ thì bỏ ngay.</li><li>Trứng sống, gạo, khoai lang, chuối, lạc rang, bơ đậu phộng mua tích trữ được.</li></ul></div>';
+$("e").innerHTML=h}
+
 document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){
 document.querySelectorAll("nav button").forEach(function(x){x.setAttribute("aria-selected",x===b)});
-["a","b","c","d"].forEach(function(id){$(id).classList.toggle("hide",id!==b.dataset.t)});
+["a","b","c","d","e"].forEach(function(id){$(id).classList.toggle("hide",id!==b.dataset.t)});
 if(b.dataset.t==="a")renderA();if(b.dataset.t==="c")renderC();if(b.dataset.t==="d")renderD()}});
-renderA();renderB();renderC();renderD();
+renderA();renderB();renderC();renderD();renderE();
 </script>
 </body>
 </html>
